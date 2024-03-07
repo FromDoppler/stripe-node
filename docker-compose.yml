@@ -10,4 +10,10 @@ services:
       - .:/usr/src/app
     environment:
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - CREATE_CUSTOMER_URL=${CREATE_CUSTOMER_URL}
     #command: "tail -f /dev/null"
+    networks:
+      - emmsnetwork
+networks:
+  emmsnetwork:
+    external: true
