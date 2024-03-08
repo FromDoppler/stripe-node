@@ -11,6 +11,5 @@ async function initialize() {
     window.replace('http://localhost:4242/checkout.html')
   } else if (session.status == 'complete') {
     document.getElementById('success').classList.remove('hidden');
-    document.getElementById('customer-email').textContent = session.customer_email
   }
 }
