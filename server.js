@@ -1,5 +1,3 @@
-// https://stripe.com/docs/testing?locale=es-419
-// test card 4242 4242 4242 4242
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const createCustomerUrl = process.env.CREATE_CUSTOMER_URL;
 const eventName = process.env.EVENT_NAME;
@@ -13,7 +11,21 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.json());
 
-const YOUR_DOMAIN = process.env.YOUR_DOMAIN;
+const domain = process.env.DOMAIN;
+
+const getCurrentDate = () => {
+    const currentDate = new Date();
+    const day = currentDate.getDate();
+    const month = currentDate.getMonth() + 1;
+    const year = currentDate.getFullYear();
+    return `${day}/${month}/${year}`;
+};
+
+
+const getCurrentDateTime = () => {
+    const currentDateTime = new Date().toISOString();
+    return currentDateTime;
+};
 
 app.post('/create-checkout-session', async (req, res) => {
   try {
@@ -42,7 +54,7 @@ app.post('/create-checkout-session', async (req, res) => {
       mode: 'payment',
       payment_method_types: ['card'],
       allow_promotion_codes: true,
-      return_url: `${YOUR_DOMAIN}/return.html?session_id={CHECKOUT_SESSION_ID}`,
+      return_url: `${domain}/return.html?session_id={CHECKOUT_SESSION_ID}`,
       automatic_tax: {enabled: true},
     };
 
@@ -73,14 +85,16 @@ app.get('/session-status', async (req, res) => {
         customer_email: session.customer_details.email,
         customer_country: session.customer_details.address.country,
         tax_id: session.custom_fields.find(field => field.key === 'taxid')?.text?.value,
-        payment_status:session.payment_status,
+        payment_status: session.payment_status,
         session_id: session.id, 
         coupon_id: session.total_details.breakdown.discounts[0]?.discount?.coupon?.id ?? null,
         coupon_name: session.total_details.breakdown.discounts[0]?.discount?.coupon?.name ?? null,
         event_name: eventName,
         event_phase: eventPhase,
         ticket_name: ticketName,
-        ticket_price_id: ticketPriceId
+        ticket_price_id: ticketPriceId,
+        date: getCurrentDate(),
+        datetime: getCurrentDateTime()
     };
     
     const response = await axios.post(createCustomerUrl, filteredSession);

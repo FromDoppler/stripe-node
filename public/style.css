@@ -1,3 +1,5 @@
+@import 'return.css';
+
 body {
   display: flex;
   justify-content: center;
@@ -8,15 +10,6 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-section {
-  background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  width: 400px;
-  height: 112px;
-  border-radius: 6px;
-  justify-content: space-between;
 }
 p {
   font-style: normal;
