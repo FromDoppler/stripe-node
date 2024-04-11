@@ -15,9 +15,11 @@ services:
       - EVENT_PHASE=${EVENT_PHASE}
       - TICKET_NAME=${TICKET_NAME}
       - TICKET_PRICE_ID=${TICKET_PRICE_ID}
+      - DOMAIN=${DOMAIN}
     #command: "tail -f /dev/null"
     networks:
       - emmsnetwork
+    restart: always
 networks:
   emmsnetwork:
     external: true
