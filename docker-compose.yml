@@ -16,6 +16,10 @@ services:
       - TICKET_NAME=${TICKET_NAME}
       - TICKET_PRICE_ID=${TICKET_PRICE_ID}
       - DOMAIN=${DOMAIN}
+      - RETURN_URL=${RETURN_URL}
+      - FOLDER_NODE=${FOLDER_NODE}
+      - PORT=${PORT}
+
     #command: "tail -f /dev/null"
     networks:
       - emmsnetwork
