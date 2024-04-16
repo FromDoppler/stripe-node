@@ -1,9 +1,23 @@
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-const createCustomerUrl = process.env.CREATE_CUSTOMER_URL;
-const eventName = process.env.EVENT_NAME;
-const eventPhase = process.env.EVENT_PHASE;
-const ticketName = process.env.TICKET_NAME;
-const ticketPriceId = process.env.TICKET_PRICE_ID;
+const {
+  DOMAIN,
+  STRIPE_SECRET_KEY,
+  CREATE_CUSTOMER_URL,
+  EVENT_NAME,
+  EVENT_PHASE,
+  TICKET_PRICE_ID,
+  TICKET_NAME,
+  RETURN_URL,
+  FOLDER_NODE,
+  PORT
+} = require('./config');
+
+const stripeSecretKey = STRIPE_SECRET_KEY;
+const createCustomerUrl = CREATE_CUSTOMER_URL;
+const eventName = EVENT_NAME;
+const eventPhase = EVENT_PHASE;
+const ticketName = TICKET_NAME;
+const ticketPriceId = TICKET_PRICE_ID;
+const folderNode = FOLDER_NODE;
 const stripe = require('stripe')(stripeSecretKey);
 const express = require('express');
 const axios = require('axios');
@@ -11,7 +25,7 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.json());
 
-const domain = process.env.DOMAIN;
+const domain = DOMAIN;
 
 const getCurrentDate = () => {
     const currentDate = new Date();
@@ -27,7 +41,7 @@ const getCurrentDateTime = () => {
     return currentDateTime;
 };
 
-app.post('/create-checkout-session', async (req, res) => {
+app.post( `${folderNode}create-checkout-session`, async (req, res) => {
   try {
     let createObj = {
       ui_mode: 'embedded',
@@ -42,19 +56,16 @@ app.post('/create-checkout-session', async (req, res) => {
           key: 'taxid',
           label: {
             type: 'custom',
-            custom: 'TAX ID',
+            custom: 'CUIT/TAXID/NIF/CIF/RFC/CC/RUC/DUI/RUT',
           },
           type: 'text',
-          optional: false,
-          text: {
-            minimum_length: 10
-          }
+          optional: false
         },
       ],
       mode: 'payment',
       payment_method_types: ['card'],
       allow_promotion_codes: true,
-      return_url: `${domain}/return.html?session_id={CHECKOUT_SESSION_ID}`,
+      return_url: `${RETURN_URL}?session_id={CHECKOUT_SESSION_ID}`,
       automatic_tax: {enabled: true},
     };
 
@@ -70,7 +81,7 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 });
 
-app.get('/session-status', async (req, res) => {
+app.get( `${folderNode}session-status`, async (req, res) => {
   try {
     const session = await stripe.checkout.sessions.retrieve(req.query.session_id, {
       expand: ['customer', 'total_details.breakdown'],
@@ -109,4 +120,4 @@ app.get('/session-status', async (req, res) => {
   }
 });
 
-app.listen(4242, () => console.log('Running on port 4242'));
+app.listen(PORT, () => console.log('Running on port 9000'));
