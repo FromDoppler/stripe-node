@@ -22,8 +22,8 @@ services:
 
     #command: "tail -f /dev/null"
     networks:
-      - emmsnetwork
+      - emms24_emmsnetwork
     restart: always
 networks:
-  emmsnetwork:
+  emms24_emmsnetwork:
     external: true
