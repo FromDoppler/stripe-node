@@ -1,5 +1,6 @@
 const {
   DOMAIN,
+  ORIGIN_DOMAIN_EMMS,
   STRIPE_SECRET_KEY,
   CREATE_CUSTOMER_URL,
   EVENT_NAME,
@@ -11,6 +12,7 @@ const {
   PORT
 } = require('./config');
 
+const allowedOrigins = [DOMAIN, ORIGIN_DOMAIN_EMMS];
 const stripeSecretKey = STRIPE_SECRET_KEY;
 const createCustomerUrl = CREATE_CUSTOMER_URL;
 const eventName = EVENT_NAME;
@@ -21,11 +23,24 @@ const folderNode = FOLDER_NODE;
 const stripe = require('stripe')(stripeSecretKey);
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors');
 const app = express();
+
 app.use(express.static('public'));
 app.use(express.json());
 
-const domain = DOMAIN;
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
 
 const getCurrentDate = () => {
     const currentDate = new Date();
@@ -65,7 +80,7 @@ app.post( `${folderNode}create-checkout-session`, async (req, res) => {
       mode: 'payment',
       payment_method_types: ['card'],
       allow_promotion_codes: true,
-      return_url: `${RETURN_URL}?session_id={CHECKOUT_SESSION_ID}`,
+      return_url: `${ORIGIN_DOMAIN_EMMS}${RETURN_URL}?session_id={CHECKOUT_SESSION_ID}`,
       automatic_tax: {enabled: true},
     };
 
@@ -120,4 +135,4 @@ app.get( `${folderNode}session-status`, async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log('Running on port 9000'));
+app.listen(PORT, () => console.log('Running on port ' + PORT));
