@@ -5,12 +5,14 @@ const EVENT_PHASE = process.env.EVENT_PHASE;
 const TICKET_NAME = process.env.TICKET_NAME;
 const TICKET_PRICE_ID = process.env.TICKET_PRICE_ID;
 const DOMAIN = process.env.DOMAIN;
+const ORIGIN_DOMAIN_EMMS = process.env.ORIGIN_DOMAIN_EMMS;
 const RETURN_URL = process.env.RETURN_URL;
 const FOLDER_NODE = process.env.FOLDER_NODE;
 const PORT = process.env.PORT;
 
 module.exports = {
   DOMAIN,
+  ORIGIN_DOMAIN_EMMS,
   STRIPE_SECRET_KEY,
   CREATE_CUSTOMER_URL,
   RETURN_URL,
