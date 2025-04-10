@@ -43,49 +43,36 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 const getCurrentDate = () => {
-    const currentDate = new Date();
-    const day = currentDate.getDate();
-    const month = currentDate.getMonth() + 1;
-    const year = currentDate.getFullYear();
-    return `${day}/${month}/${year}`;
+  const currentDate = new Date();
+  return `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
 };
 
+const getCurrentDateTime = () => new Date().toISOString();
 
-const getCurrentDateTime = () => {
-    const currentDateTime = new Date().toISOString();
-    return currentDateTime;
-};
-
-app.post( `${folderNode}create-checkout-session`, async (req, res) => {
+app.post(`${folderNode}create-checkout-session`, async (req, res) => {
   try {
+    const { customerEmail, promotionCode, ...utmParams } = req.body;
+
     let createObj = {
       ui_mode: 'embedded',
-      line_items: [
-        {
-          price: ticketPriceId,
-          quantity: 1,
-        },
-      ],
-      custom_fields: [
-        {
-          key: 'taxid',
-          label: {
-            type: 'custom',
-            custom: 'CUIT/TAXID/NIF/CIF/RFC/CC/RUC/DUI/RUT',
-          },
-          type: 'text',
-          optional: false
-        },
-      ],
+      line_items: [{ price: ticketPriceId, quantity: 1 }],
+      custom_fields: [{
+        key: 'taxid',
+        label: { type: 'custom', custom: 'CUIT/TAXID/NIF/CIF/RFC/CC/RUC/DUI/RUT' },
+        type: 'text',
+        optional: false
+      }],
       mode: 'payment',
       payment_method_types: ['card'],
-      allow_promotion_codes: true,
-      return_url: `${ORIGIN_DOMAIN_EMMS}${RETURN_URL}?session_id={CHECKOUT_SESSION_ID}`,
-      automatic_tax: {enabled: true},
+      return_url: `${ORIGIN_DOMAIN_EMMS}${RETURN_URL}?session_id={CHECKOUT_SESSION_ID}&${new URLSearchParams(utmParams)}`,
+      automatic_tax: { enabled: true },
     };
 
-    if (req.body.customerEmail) {
-      createObj.customer_email = req.body.customerEmail;
+    if (customerEmail) createObj.customer_email = customerEmail;
+    if (promotionCode) {
+      createObj.discounts = [{ promotion_code: promotionCode }];
+    } else {
+      createObj.allow_promotion_codes = true;
     }
 
     const session = await stripe.checkout.sessions.create(createObj);
@@ -96,43 +83,54 @@ app.post( `${folderNode}create-checkout-session`, async (req, res) => {
   }
 });
 
-app.get( `${folderNode}session-status`, async (req, res) => {
+app.get(`${folderNode}session-status`, async (req, res) => {
   try {
     const session = await stripe.checkout.sessions.retrieve(req.query.session_id, {
       expand: ['customer', 'total_details.breakdown'],
     });
-    
+
+    const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'origin'];
+
+    const utmData = utmParams.reduce((acc, param) => {
+      acc[param] = req.query[param] || null;
+      return acc;
+    }, {});
+
     const filteredSession = {
-        price: (session.amount_subtotal / 100).toFixed(2),
-        discount: (session.total_details.amount_discount / 100).toFixed(2),
-        final_price: ((session.amount_subtotal - session.total_details.amount_discount) / 100).toFixed(2),
-        currency: session.currency,
-        customer_name: session.customer_details.name,
-        customer_email: session.customer_details.email,
-        customer_country: session.customer_details.address.country,
-        tax_id: session.custom_fields.find(field => field.key === 'taxid')?.text?.value,
-        payment_status: session.payment_status,
-        session_id: session.id, 
-        coupon_id: session.total_details.breakdown.discounts[0]?.discount?.coupon?.id ?? null,
-        coupon_name: session.total_details.breakdown.discounts[0]?.discount?.coupon?.name ?? null,
-        event_name: eventName,
-        event_phase: eventPhase,
-        ticket_name: ticketName,
-        ticket_price_id: ticketPriceId,
-        date: getCurrentDate(),
-        datetime: getCurrentDateTime()
+      price: (session.amount_subtotal / 100).toFixed(2),
+      discount: (session.total_details.amount_discount / 100).toFixed(2),
+      final_price: ((session.amount_subtotal - session.total_details.amount_discount) / 100).toFixed(2),
+      currency: session.currency,
+      customer_name: session.customer_details?.name,
+      customer_email: session.customer_details?.email,
+      customer_country: session.customer_details?.address?.country,
+      tax_id: session.custom_fields?.find(field => field.key === 'taxid')?.text?.value,
+      payment_status: session.payment_status,
+      session_id: session.id,
+      coupon_id: session.total_details.breakdown.discounts[0]?.discount?.coupon?.id ?? null,
+      coupon_name: session.total_details.breakdown.discounts[0]?.discount?.coupon?.name ?? null,
+      event_name: eventName,
+      event_phase: eventPhase,
+      ticket_name: ticketName,
+      ticket_price_id: ticketPriceId,
+      date: getCurrentDate(),
+      datetime: getCurrentDateTime(),
+      ...utmData
     };
-    
+
     const response = await axios.post(createCustomerUrl, filteredSession);
+
     res.send({
-        status: session.status,
-        customer_details: filteredSession,
-        response: response.data
+      status: session.status,
+      customer_details: filteredSession,
+      response: response.data
     });
+
   } catch (error) {
     console.error('Error retrieving session:', error);
     res.status(500).send({ error: 'Error retrieving session' });
   }
 });
+
 
 app.listen(PORT, () => console.log('Running on port ' + PORT));
