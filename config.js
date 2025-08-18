@@ -21,5 +21,5 @@ module.exports = {
   TICKET_PRICE_ID,
   TICKET_NAME,
   FOLDER_NODE,
-  PORT
+  PORT,
 };
