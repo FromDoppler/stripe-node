@@ -1,11 +1,10 @@
-version: '3.9'
 services:
   stripe-node:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "4242:4242"
+      - "${PORT}:${PORT}"
     volumes:
       - .:/usr/src/app
     environment:
@@ -23,8 +22,8 @@ services:
 
     #command: "tail -f /dev/null"
     networks:
-      - emms24_emmsnetwork
+      - emmsnetwork
     restart: always
 networks:
-  emms24_emmsnetwork:
-    external: true
+  emmsnetwork:
+    driver: bridge
