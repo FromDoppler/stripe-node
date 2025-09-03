@@ -18,11 +18,11 @@ class CustomerService {
       payment_status: session.payment_status,
       session_id: session.id,
       coupon_id:
-        session.total_details?.breakdown?.discounts?.[0]?.discount?.coupon?.id ??
-        null,
+        session.total_details?.breakdown?.discounts?.[0]?.discount?.coupon
+          ?.id ?? null,
       coupon_name:
-        session.total_details?.breakdown?.discounts?.[0]?.discount?.coupon?.name ??
-        null,
+        session.total_details?.breakdown?.discounts?.[0]?.discount?.coupon
+          ?.name ?? null,
       event_name: eventData.eventName,
       event_phase: eventData.eventPhase,
       ticket_name: eventData.ticketName,
@@ -60,7 +60,7 @@ class CustomerService {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(customerData),
-        signal: controller.signal
+        signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
@@ -76,13 +76,13 @@ class CustomerService {
 
       if (!response.ok) {
         throw new Error(
-          `HTTP ${response.status}: ${data.message || "Unknown error"}`
+          `HTTP ${response.status}: ${data.message || "Unknown error"}`,
         );
       }
 
       return data;
     } catch (err) {
-      if (err.name === 'AbortError') {
+      if (err.name === "AbortError") {
         console.error("Customer data delivery timeout after 10s");
         throw new Error("External API timeout");
       }

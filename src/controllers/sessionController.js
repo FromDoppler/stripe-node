@@ -34,7 +34,7 @@ class SessionController {
       customerDetails = customerService.transformSessionData(
         session,
         utmData,
-        eventData
+        eventData,
       );
     } catch (err) {
       console.error("Session transformation failed:", err.message);
@@ -55,7 +55,7 @@ class SessionController {
     try {
       const externalResponse = await customerService.sendCustomerData(
         process.env.CREATE_CUSTOMER_URL,
-        customerDetails
+        customerDetails,
       );
 
       return res.json({
@@ -66,9 +66,7 @@ class SessionController {
       });
     } catch (err) {
       console.error("External delivery failed:", err.message);
-      return res
-        .status(502)
-        .json({ error: "Failed to deliver customer data" });
+      return res.status(502).json({ error: "Failed to deliver customer data" });
     }
   }
 }

@@ -28,5 +28,5 @@ const validateSessionId = (req, res, next) => {
 
 module.exports = {
   validateCheckout,
-  validateSessionId
+  validateSessionId,
 };
