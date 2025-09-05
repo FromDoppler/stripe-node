@@ -1,13 +1,13 @@
-const { PORT } = require("./config");
+const config = require("./config");
 const createApp = require("./src/app");
 
 function startServer() {
   const app = createApp();
 
-  const server = app.listen(PORT, () => {
-    console.log(`Stripe API running on port ${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
-    console.log(`Health check: http://localhost:${PORT}/health`);
+  const server = app.listen(config.port, () => {
+    console.log(`Stripe API running on port ${config.port}`);
+    console.log(`Environment: ${config.nodeEnv}`);
+    console.log(`Health check: http://localhost:${config.port}/health`);
   });
 
   process.on("SIGTERM", () => {
