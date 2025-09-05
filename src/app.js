@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-
-const { DOMAIN, ORIGIN_DOMAIN_EMMS } = require("../config");
+const config = require("../config");
 const routes = require("./routes");
 const { errorHandler, notFoundHandler } = require("./middlewares/errorHandler");
 
@@ -14,7 +13,7 @@ function createApp() {
 
   // CORS configuration
   const corsOptions = {
-    origin: [DOMAIN, ORIGIN_DOMAIN_EMMS].filter(Boolean),
+    origin: [config.domain, config.originDomainEmms].filter(Boolean),
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -30,7 +29,7 @@ function createApp() {
   });
 
   // Request logging (development)
-  if (process.env.NODE_ENV === "development") {
+  if (config.nodeEnv === "development") {
     app.use((req, res, next) => {
       console.log(`${req.method} ${req.path} - ${new Date().toISOString()}`);
       next();

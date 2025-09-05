@@ -19,6 +19,7 @@ services:
       - RETURN_URL=${RETURN_URL}
       - FOLDER_NODE=${FOLDER_NODE}
       - PORT=${PORT}
+      - NODE_ENV=${NODE_ENV}
 
     #command: "tail -f /dev/null"
     networks:

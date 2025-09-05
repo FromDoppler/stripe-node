@@ -1,3 +1,5 @@
+const config = require("../../config");
+
 /**
  * Middleware de manejo de errores centralizado
  */
@@ -23,7 +25,7 @@ const errorHandler = (err, req, res, next) => {
   // Error generico
   res.status(500).json({
     error: "Internal server error",
-    ...(process.env.NODE_ENV === "development" && { details: err.message }),
+    ...(config.nodeEnv === "development" && { details: err.message }),
   });
 };
 

@@ -1,3 +1,4 @@
+const config = require("../../config");
 const stripeService = require("../services/stripeService");
 
 class CheckoutController {
@@ -6,13 +7,13 @@ class CheckoutController {
       const { customerEmail, promotionCode, ...utmParams } = req.body;
 
       const utmString = new URLSearchParams(utmParams).toString();
-      const returnUrl = `${process.env.ORIGIN_DOMAIN_EMMS}${process.env.RETURN_URL}?session_id={CHECKOUT_SESSION_ID}&${utmString}`;
+      const returnUrl = `${config.originDomainEmms}${config.returnUrl}?session_id={CHECKOUT_SESSION_ID}&${utmString}`;
 
       const session = await stripeService.createCheckoutSession({
         customerEmail,
         promotionCode,
         utmParams,
-        ticketPriceId: process.env.TICKET_PRICE_ID,
+        ticketPriceId: config.ticketPriceId,
         returnUrl,
       });
 

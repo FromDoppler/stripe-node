@@ -1,5 +1,5 @@
 const express = require("express");
-const { FOLDER_NODE } = require("../../config");
+const config = require("../../config");
 
 // Controllers
 const CheckoutController = require("../controllers/checkoutController");
@@ -20,7 +20,7 @@ router.get("/health", (req, res) => {
   res.json({
     status: "healthy",
     timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version || "1.0.0",
+    version: config.npmPackageVersion,
   });
 });
 
@@ -28,7 +28,7 @@ router.get("/health", (req, res) => {
  * Checkout routes
  */
 router.post(
-  `${FOLDER_NODE}create-checkout-session`,
+  `${config.folderNode}create-checkout-session`,
   validateCheckout,
   CheckoutController.createCheckoutSession,
 );
@@ -37,7 +37,7 @@ router.post(
  * Session routes
  */
 router.get(
-  `${FOLDER_NODE}session-status`,
+  `${config.folderNode}session-status`,
   validateSessionId,
   SessionController.getSessionStatus,
 );

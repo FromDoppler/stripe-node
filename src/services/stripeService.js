@@ -1,4 +1,5 @@
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const config = require("../../config");
+const stripe = require("stripe")(config.stripeSecretKey);
 
 class StripeService {
   async createCheckoutSession(params) {

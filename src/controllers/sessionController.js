@@ -1,3 +1,4 @@
+const config = require("../../config");
 const stripeService = require("../services/stripeService");
 const customerService = require("../services/customerService");
 
@@ -23,10 +24,10 @@ class SessionController {
     }
 
     const eventData = {
-      eventName: process.env.EVENT_NAME,
-      eventPhase: process.env.EVENT_PHASE,
-      ticketName: process.env.TICKET_NAME,
-      ticketPriceId: process.env.TICKET_PRICE_ID,
+      eventName: config.eventName,
+      eventPhase: config.eventPhase,
+      ticketName: config.ticketName,
+      ticketPriceId: config.ticketPriceId,
     };
 
     let customerDetails;
@@ -54,7 +55,7 @@ class SessionController {
 
     try {
       const externalResponse = await customerService.sendCustomerData(
-        process.env.CREATE_CUSTOMER_URL,
+        config.createCustomerUrl,
         customerDetails,
       );
 
