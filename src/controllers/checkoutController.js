@@ -7,7 +7,10 @@ class CheckoutController {
       const { customerEmail, promotionCode, ...utmParams } = req.body;
 
       const utmString = new URLSearchParams(utmParams).toString();
-      const returnUrl = `${config.originDomainEmms}${config.returnUrl}?session_id={CHECKOUT_SESSION_ID}&${utmString}`;
+      const baseReturnUrl = customerEmail
+        ? config.returnUrlRegistered
+        : config.returnUrlAnonymous;
+      const returnUrl = `${config.originDomainEmms}${baseReturnUrl}?session_id={CHECKOUT_SESSION_ID}&${utmString}`;
 
       const session = await stripeService.createCheckoutSession({
         customerEmail,

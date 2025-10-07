@@ -6,7 +6,8 @@ const requiredEnvVars = [
   "TICKET_NAME",
   "TICKET_PRICE_ID",
   "ORIGIN_DOMAIN_EMMS",
-  "RETURN_URL",
+  "RETURN_URL_REGISTERED",
+  "RETURN_URL_ANONYMOUS",
   "FOLDER_NODE",
 ];
 
@@ -36,7 +37,8 @@ const config = {
   // URLs and domains
   domain: process.env.DOMAIN,
   originDomainEmms: process.env.ORIGIN_DOMAIN_EMMS,
-  returnUrl: process.env.RETURN_URL,
+  returnUrlRegistered: process.env.RETURN_URL_REGISTERED,
+  returnUrlAnonymous: process.env.RETURN_URL_ANONYMOUS,
   folderNode: process.env.FOLDER_NODE,
 
   // Optional
