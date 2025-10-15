@@ -59,11 +59,15 @@ class SessionController {
         customerDetails,
       );
 
+      const isFirstTime =
+        externalResponse?.data?.data === "readonly" ? false : true;
+
       return res.json({
         status: session.status,
         payment_status: session.payment_status,
         customer_details: customerDetails,
         response: externalResponse,
+        is_first_time: isFirstTime,
       });
     } catch (err) {
       console.error("External delivery failed:", err.message);
